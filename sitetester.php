@@ -7,15 +7,15 @@
 	header("Cache-Control: post-check=0, pre-check=0", false);
 	header("Pragma: no-cache");
 
-	const SITE_DIR='../'; // Путь к директории тестируемого сайта
+	const SITE_DIR = '../'; // Путь к директории тестируемого сайта
 
 	class API { // основной класс для работы
-		const MODE_PROD=0;
-		const MODE_DEV=1;
+		const MODE_PROD = 0;
+		const MODE_DEV = 1;
 
-		const MESSAGE_TYPE_WARNING=0;
-		const MESSAGE_TYPE_ERROR=1;
-		const MESSAGE_TYPE_INFO=2;
+		const MESSAGE_TYPE_WARNING = 0;
+		const MESSAGE_TYPE_ERROR = 1;
+		const MESSAGE_TYPE_INFO = 2;
 
 		public $tests = array(); // Список найденных тестов
 		public $tobj = array (); // Сисок объектов тестов
@@ -53,7 +53,7 @@
 	/* Поиск и подключение тестов */
 	foreach (glob('tests/*.php') as $filename) {
 		require_once($filename);
-		$Api->tests[]=substr(basename($filename),0,-4);
+		$Api->tests[] = substr(basename($filename),0,-4);
 	}
 
 	$tobj = $Api->getTestList(); // Получение списка объектов тестов
@@ -80,15 +80,19 @@
 
 		<h1>Доступные тесты сайта</h1>
 		<?php
-			$i=0;
+			$i = 0;
 			foreach ($Api->tests as $test) {
 				echo "<div>";
 				if (in_array($test,$ProdTestList)) { echo "[prod] &nbsp; &nbsp; "; } else { echo "[dev] &nbsp; &nbsp; "; }
 				echo "<a href=\"?test=$test\">$test</a>";
 
-				if ($run) $tobj[$i]->run(); // Выполнить тест
-				/* При запуске сделать сохранение статусов в сессию.
-				Тогда можно будет просто вызвать список, а он выведет статусы, которые буди вычислены. */
+				if ($run) {
+					$color = Component\SiteTester\Status::getColor( $tobj[$i]->run() ); // Выполнить тест
+					/* При запуске сделать сохранение статусов в сессию.
+					Тогда можно будет просто вызвать список, а он выведет статусы, которые буди вычислены. */
+					$_SESSION[$test."_stat"] = "<span style=\"color: $color\">".$_SESSION[$test."_stat"]."</span>".' ('.date("D, d M Y H:i:s").')';
+				}
+
 				if (isset($_SESSION[$test."_stat"])) {
 					echo "&nbsp; &nbsp; ---- &nbsp; &nbsp;".$_SESSION[$test."_stat"];
 				} else echo (' (не выполнялся)');
@@ -115,7 +119,11 @@
 			$i = array_search($test, $Api->tests);
 			if ( ($i !== false) && (strpos(get_parent_class($test),'TestPrototype') !== false) ) {
 				
-				if ( (!isset($_SESSION[$test."_stat"])) || ($run) ) $tobj[$i]->run(); // Запустить тест
+				if ( (!isset($_SESSION[$test."_stat"])) || ($run) ) {
+					$color = Component\SiteTester\Status::getColor( $tobj[$i]->run() ); // Запустить тест
+					$_SESSION[$test."_stat"] = "<span style=\"color: $color\">".$_SESSION[$test."_stat"]."</span>".' ('.date("D, d M Y H:i:s").')';
+				}
+
 				echo "<p>".$_SESSION[$test."_stat"]."</p>\r\n"; // Вывести статус с подсветкой цветом
 				
 				if (!empty($_SESSION[$test."_mes"])) { // Вывести список сообщений, если были найдены
