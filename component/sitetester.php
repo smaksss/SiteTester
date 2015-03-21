@@ -65,6 +65,7 @@ namespace Component\SiteTester;
 			$this->messages[]=\API::MESSAGE_TYPE_WARNING."$text|".date("D, d M Y H:i:s");
 		}
 		public function setStatusOk ($text = '') { // установить статус и записать сообщение, если нужно
+			$text=(empty($text)) ? 'Тест пройден успешно' : $text;
 			$color=Status::getColor(Status::TYPE_OK);
 			$this->status="<span style=\"color: $color\">$text</span>";
 		}
