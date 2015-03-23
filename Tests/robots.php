@@ -1,5 +1,6 @@
 <?php
-	class robots extends Component\SiteTester\TestPrototype { // Класс тестирования файла robots.txt
+	namespace Tests;
+	class robots extends \Component\SiteTester\TestPrototype { // Класс тестирования файла robots.txt
 		protected function execute() { // выполнить тест
 			if ( $handle = @fopen (SITE_DIR.'robots.txt','r') ) {
 				$newsearch = 0;
@@ -28,7 +29,7 @@
 			}
 		}
 		public function getMode() { // отдает константу из Api
-			return API::MODE_DEV;
+			return \API::MODE_DEV;
 		}
 	}
 ?>

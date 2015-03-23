@@ -1,5 +1,6 @@
 <?php
-	class rights777 extends Component\SiteTester\TestPrototype { // права на определенные директории 777 (log, files, ...)
+	namespace Tests;
+	class rights777 extends \Component\SiteTester\TestPrototype { // права на определенные директории 777 (log, files, ...)
 		protected function execute() { // выполнить тест
 			$success = true;
 			$testDirs = array('logs', 'files'); // Проверяемые директории
@@ -26,7 +27,7 @@
 			} else $this->fail('Тест не выполнен');
 		}
 		public function getMode() { // отдает константу из Api
-			return API::MODE_PROD;
+			return \API::MODE_PROD;
 		}
 	}
 ?>

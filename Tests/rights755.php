@@ -1,5 +1,6 @@
 <?php
-	class rights755 extends Component\SiteTester\TestPrototype { // права на все директории 755 (кроме заданных) и владелец не apache пользователь
+	namespace Tests;
+	class rights755 extends \Component\SiteTester\TestPrototype { // права на все директории 755 (кроме заданных) и владелец не apache пользователь
 		protected function execute() { // выполнить тест
 			$success = true;
 			$exceptions = array('sitetester', 'logs', 'files'); // Пропускаемые директории
@@ -26,7 +27,7 @@
 			} else $this->fail('Тест не выполнен');
 		}
 		public function getMode() { // отдает константу из Api
-			return API::MODE_PROD;
+			return \API::MODE_PROD;
 		}
 	}
 ?>
