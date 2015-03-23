@@ -7,12 +7,16 @@
 					$line = strtolower(trim(fgets($handle)));
 					if (strpos($line, "user-agent:") === 0) $newsearch = 1;
 					switch ($newsearch) {
-						case 1: if ($line === "user-agent: *") $newsearch = 2; break;
-						case 2: if ($line === "disallow: /") {
-								  		$this->setStatusOk('Тест пройден успешно');
-								  		$newsearch = 3;
-								  }
-								  break 2;
+						case 1:
+							if ($line === "user-agent: *") $newsearch = 2;
+							break;
+
+						case 2:
+							if ($line === "disallow: /") {
+						  		$this->setStatusOk('Тест пройден успешно');
+						  		$newsearch = 3;
+						  }
+						  break 2;
 					}
 				}
 				fclose($handle);
@@ -23,6 +27,8 @@
 				$this->setStatusError('Ошибка выполнения');
 			}
 		}
-		public function getMode() { return API::MODE_DEV; } // отдает константу из Api
+		public function getMode() { // отдает константу из Api
+			return API::MODE_DEV;
+		}
 	}
 ?>

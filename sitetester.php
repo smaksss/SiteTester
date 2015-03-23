@@ -1,4 +1,7 @@
-<?php date_default_timezone_set("Europe/Moscow"); session_start();
+<?php
+	date_default_timezone_set("Europe/Moscow");
+	session_start();
+
 	/* Создание заголовка не кэшируемой в браузерах страницы */
 	header("Cache-Control: private");
 	header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
@@ -21,7 +24,9 @@
 		public $tobj = array (); // Сисок объектов тестов
 
 		static public function getSiteMode() { // отдает константу MODE_PROD или MODE_DEV
-			if (file_exists(SITE_DIR.'testmode.ini')) { return self::MODE_DEV; } else { return self::MODE_PROD; }
+			if (file_exists(SITE_DIR.'testmode.ini')) {
+				return self::MODE_DEV;
+			} else return self::MODE_PROD;
 		}
 		public function getTestList() { // TestPrototype[] - отдает набор объектов тестов
 			$TestList = array();
@@ -29,12 +34,12 @@
 			return $TestList;
 		}
 		public function getProdTestList() { // : string[] - отдает набор имен классов тестов для живого сайта
-		// собираться должен так
-		// return array(
-    	// Test\Name123::getClass(),
-    	// Test\Name456::getClass(),
-    	// ...
-		// )
+			/* собираться должен так
+				return array(
+    				Test\Name123::getClass(),
+    				Test\Name456::getClass(),
+    				...
+				) */
 			$ProdTestList = array();
 			foreach ($this->tests as $test) if (@$test::getMode() == API::MODE_PROD) $ProdTestList[] = $test;
 			return $ProdTestList;
@@ -60,7 +65,9 @@
 	$ProdTestList = $Api->getProdTestList(); // Список классов тестов для живого сайта
 	$DevTestList = $Api->getDevTestList(); // Список классов тестов для тестового сайта
 
-	if (isset($_GET["run"])) { $run = true; } else { $run = false; } // Датчик запуска тестов
+	if (isset($_GET["run"])) { // Датчик запуска тестов
+		$run = true;
+	} else $run = false;
 ?>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
@@ -83,7 +90,9 @@
 			$i = 0;
 			foreach ($Api->tests as $test) {
 				echo "<div>";
-				if (in_array($test,$ProdTestList)) { echo "[prod] &nbsp; &nbsp; "; } else { echo "[dev] &nbsp; &nbsp; "; }
+				if (in_array($test,$ProdTestList)) {
+					echo "[prod] &nbsp; &nbsp; ";
+				} else echo "[dev] &nbsp; &nbsp; ";
 				echo "<a href=\"?test=$test\">$test</a>";
 
 				if ($run) {
@@ -133,9 +142,17 @@
 						$text = strtok($mess,"|");
 						echo "<p>";
 						switch ((int)substr($text,0,1)) {
-							case API::MESSAGE_TYPE_WARNING: echo 'Warning: '; break;
-							case API::MESSAGE_TYPE_ERROR: echo 'Error: '; break;
-							case API::MESSAGE_TYPE_INFO: echo 'Info: '; break;
+							case API::MESSAGE_TYPE_WARNING:
+								echo 'Warning: ';
+								break;
+
+							case API::MESSAGE_TYPE_ERROR:
+								echo 'Error: ';
+								break;
+
+							case API::MESSAGE_TYPE_INFO:
+								echo 'Info: ';
+								break;
 						}
 						echo substr($text,1)." (".strtok("|").")</p>\r\n";
 					}
