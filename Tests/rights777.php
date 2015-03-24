@@ -22,13 +22,13 @@
 			foreach ($arr as $dirName) {
 
 				if ( (!empty($testDirs)) && (!in_array(basename($dirName),$testDirs)) ) {
-					$this->ScanDir ($dirName.'\*', $testDirs, $exceptions);
+					$this->ScanDir ($dirName.'/*', $testDirs, $exceptions);
 					continue;
 				}
 				
 				if (in_array(basename($dirName),$exceptions)) continue;
 				
-				$success = $this->checkDir($dirName);
+				$success = ($this->checkDir($dirName) && $success);
 			}
 			return $success;
 		}
