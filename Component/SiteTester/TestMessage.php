@@ -3,23 +3,20 @@ namespace Component\SiteTester;
 	class TestMessage { // Класс сообщения теста
 		private $MESSAGE_OF_TYPE = array('Warning', 'Error', 'Info');
 		private $COLORS_OF_TYPE = array('#0000', '#ff0000', '#0000ff');
-		private $MessType, $MessText, $MessDate;
+		private $Mess = array();
 		
-		function __construct ($text) {
-			$text = strtok($text,"|");
-			$this->MessType = (int)substr($text,0,1);
-			$this->MessText = substr($text,1);
-			$this->MessDate = strtok('|');
+		function __construct (array $mess) {
+			$this->Mess = $mess;
 		}
 		
 		public function getRunResultType() {
-			return $this->MESSAGE_OF_TYPE[$this->MessType];
+			return $this->MESSAGE_OF_TYPE[$this->Mess['type']];
 		}
 		public function getResultColor() {
-			return $this->COLORS_OF_TYPE[$this->MessType];
+			return $this->COLORS_OF_TYPE[$this->Mess['type']];
 		}
 		public function getMessage() {
-			return $this->MessText.' ('.$this->MessDate.')';
+			return $this->Mess['text'].' ('.$this->Mess['date'].')';
 		}
 	}
 ?>

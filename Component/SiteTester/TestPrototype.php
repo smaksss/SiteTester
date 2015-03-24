@@ -34,43 +34,43 @@ namespace Component\SiteTester;
 			return $this->getStatusSES(); // отдает константу класса Status
 		}
 		abstract public function getMode(); // отдает константу из Api
+
 		public function addMessage ($text, $type = \API::MESSAGE_TYPE_INFO) {
-			$this->messages[] = "$type$text|".date("D, d M Y H:i:s");
+			$this->messages[] = array ( 'type'=>$type, 'text'=>$text, 'date'=>date("D, d M Y H:i:s") );
 		}
 		public function addMessageInfo ($text) {
-			$this->messages[] = \API::MESSAGE_TYPE_INFO."$text|".date("D, d M Y H:i:s");
+			$this->addMessage($text);
 		}
 		public function addMessageError ($text) {
-			$this->messages[] = \API::MESSAGE_TYPE_ERROR."$text|".date("D, d M Y H:i:s");
+			$this->addMessage($text, \API::MESSAGE_TYPE_ERROR);
 		}
 		public function addMessageWarning ($text) {
-			$this->messages[] = \API::MESSAGE_TYPE_WARNING."$text|".date("D, d M Y H:i:s");
+			$this->addMessage($text, \API::MESSAGE_TYPE_WARNING);
+		}
+
+		public function setStatus ($text, $type = Status::TYPE_OK) { // установить статус
+			$this->status = $type;
+			$this->setStatusSES (array($type, $text));
 		}
 		public function setStatusOk ($text = '') { // установить статус и записать сообщение, если нужно
 			$text = (empty($text)) ? 'Тест пройден успешно' : $text;
-			$this->status = Status::TYPE_OK;
-			$this->setStatusSES (array($this->status, $text));
+			$this->setStatus($text);
 		}
 		/* установка всех остальных статусов c обязательным сообщением */
 		public function setStatusWarning ($text) {
-			$this->status = Status::TYPE_WARNING;
-			$this->setStatusSES (array($this->status, $text));
+			$this->setStatus($text, Status::TYPE_WARNING);
 		}
 		public function setStatusError ($text) {
-			$this->status = Status::TYPE_ERROR;
-			$this->setStatusSES (array($this->status, $text));
+			$this->setStatus($text, Status::TYPE_ERROR);
 		}
 		public function setStatusSkip ($text) {
-			$this->status = Status::TYPE_SKIP;
-			$this->setStatusSES (array($this->status, $text));
+			$this->setStatus($text, Status::TYPE_SKIP);
 		}
 		public function setStatusMessage ($text) {
-			$this->status = Status::TYPE_MESSAGE;
-			$this->setStatusSES (array($this->status, $text));
+			$this->setStatus($text, Status::TYPE_MESSAGE);
 		}
 		public function fail ($text) { // прервать выполнение теста
-			$this->status = Status::TYPE_FAIL;
-			$this->setStatusSES (array($this->status, $text));
+			$this->setStatus($text, Status::TYPE_FAIL);
 		}
 
 		/* Ф-ции для работы с сессией */
