@@ -18,8 +18,12 @@ namespace Component\SiteTester;
 				try { // Обработка исключений
 					$this->execute(); // запускает метод execute
 				}
-				catch (TesterException $e) {} // Перехватывает TesterException -> fail
-				catch (\Exception $e) {} // Перехватывает \Exception -> error
+				catch (TesterException $e) { // Перехватывает TesterException -> fail
+					$this->addMessageError ('Выброшено исключение TesterException');
+				}
+				catch (\Exception $e) { // Перехватывает \Exception -> error
+					$this->addMessageError ('Выброшено исключение \Exception');
+				}
 			}
 
 			/* Если после выполнения не поменялся статус - выдать предупреждение "Статус не установлен" */
@@ -55,7 +59,6 @@ namespace Component\SiteTester;
 		public function setStatusError ($text) {
 			$this->status = Status::TYPE_ERROR;
 			$this->setStatusSES (array($this->status, $text));
-			// throw new \Exception('Ошибка выполнения.');
 		}
 		public function setStatusSkip ($text) {
 			$this->status = Status::TYPE_SKIP;
@@ -68,7 +71,6 @@ namespace Component\SiteTester;
 		public function fail ($text) { // прервать выполнение теста
 			$this->status = Status::TYPE_FAIL;
 			$this->setStatusSES (array($this->status, $text));
-			throw new TesterException('Тест не выполнен.'); // выбросить TesterException
 		}
 
 		/* Ф-ции для работы с сессией */
