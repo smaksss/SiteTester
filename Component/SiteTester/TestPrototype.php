@@ -13,9 +13,7 @@ namespace Component\SiteTester;
 				$this->setStatusSkip('Тест пропущен');
 				$this->addMessageInfo('Тест предназначен для другого режима сайта');
 			} else {
-				/* Перед запуском сбросить статус */
-				$_SESSION[get_class($this)."_mes"] = '';
-				$_SESSION[get_class($this)."_stat"] = '';
+				$this->clearSES(); // Перед запуском сбросить статус
 
 				try { // Обработка исключений
 					$this->execute(); // запускает метод execute
@@ -27,10 +25,9 @@ namespace Component\SiteTester;
 			/* Если после выполнения не поменялся статус - выдать предупреждение "Статус не установлен" */
 			if (empty($this->status)) $this->setStatusMessage('Статус не установлен');
 
-			/* результат сохраняет в сессию, чтобы потом можно было восстановить */
-			$_SESSION[get_class($this)."_mes"] = join('#',$this->messages);
+			$this->setMessSES ($this->messages); // результат сохраняет в сессию, чтобы потом можно было восстановить
 			
-			return $this->status; // отдает константу класса Status
+			return $this->getStatusSES(); // отдает константу класса Status
 		}
 		abstract public function getMode(); // отдает константу из Api
 		public function addMessage ($text, $type = \API::MESSAGE_TYPE_INFO) {
@@ -48,30 +45,52 @@ namespace Component\SiteTester;
 		public function setStatusOk ($text = '') { // установить статус и записать сообщение, если нужно
 			$text = (empty($text)) ? 'Тест пройден успешно' : $text;
 			$this->status = Status::TYPE_OK;
-			$_SESSION[get_class($this)."_stat"] = $text;
+			$this->setStatusSES (array($this->status, $text));
 		}
 		/* установка всех остальных статусов c обязательным сообщением */
 		public function setStatusWarning ($text) {
 			$this->status = Status::TYPE_WARNING;
-			$_SESSION[get_class($this)."_stat"] = $text;
+			$this->setStatusSES (array($this->status, $text));
 		}
 		public function setStatusError ($text) {
 			$this->status = Status::TYPE_ERROR;
-			$_SESSION[get_class($this)."_stat"] = $text;
+			$this->setStatusSES (array($this->status, $text));
 			// throw new \Exception('Ошибка выполнения.');
 		}
 		public function setStatusSkip ($text) {
 			$this->status = Status::TYPE_SKIP;
-			$_SESSION[get_class($this)."_stat"] = $text;
+			$this->setStatusSES (array($this->status, $text));
 		}
 		public function setStatusMessage ($text) {
 			$this->status = Status::TYPE_MESSAGE;
-			$_SESSION[get_class($this)."_stat"] = $text;
+			$this->setStatusSES (array($this->status, $text));
 		}
 		public function fail ($text) { // прервать выполнение теста
 			$this->status = Status::TYPE_FAIL;
-			$_SESSION[get_class($this)."_stat"] = $text;
+			$this->setStatusSES (array($this->status, $text));
 			throw new TesterException('Тест не выполнен.'); // выбросить TesterException
+		}
+
+		/* Ф-ции для работы с сессией */
+		public function clearSES() {
+			$_SESSION[get_class($this)."_mes"] = '';
+			$_SESSION[get_class($this)."_stat"] = '';
+		}
+		public function setStatusSES (array $arr) {
+			$_SESSION[get_class($this)."_stat"] = array (
+																		'status'=>$arr[0],
+																		'text'=>$arr[1],
+																		'date'=>date("D, d M Y H:i:s")
+																		);
+		}
+		public function setMessSES (array $arr) {
+			$_SESSION[get_class($this)."_mes"] = $arr;
+		}
+		public function getStatusSES () {
+			return $_SESSION[get_class($this)."_stat"];
+		}
+		public function getMessSES () {
+			return $_SESSION[get_class($this)."_mes"];
 		}
 	}
 ?>

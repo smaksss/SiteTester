@@ -42,18 +42,16 @@
 			} else $Twig['TestList'][$i]['Type'] = '[dev]';
 			$Twig['TestList'][$i]['Name'] = basename($test);
 
-			if ($run) {
-				$color = Component\SiteTester\Status::getColor( $tobj[$i]->run() ); // Выполнить тест
-				/* При запуске сделать сохранение статусов в сессию.
-				Тогда можно будет просто вызвать список, а он выведет статусы, которые буди вычислены. */
-				$_SESSION[$test."_stat"].= '|'.$color.'|'.date("D, d M Y H:i:s");
-			}
+			if ($run) $tobj[$i]->run(); // Выполнить тест
+			/* При запуске сделать сохранение статусов в сессию.
+			Тогда можно будет просто вызвать список, а он выведет статусы, которые буди вычислены. */
 
-			if (isset($_SESSION[$test."_stat"])) {
+			$testStatus = $tobj[$i]->getStatusSES();
+			if (!empty($testStatus)) {
 				$Twig['TestList'][$i]['Stat'] = array (
-																	'Text'=>strtok($_SESSION[$test."_stat"],'|'),
-																	'Color'=>strtok('|'),
-																	'Date'=>'('.strtok('|').')'
+																	'Text'=>$testStatus['text'],
+																	'Color'=>Component\SiteTester\Status::getColor( $testStatus['status'] ),
+																	'Date'=>'('.$testStatus['date'].')'
 																	);
 			} else $Twig['TestList'][$i]['Stat'] = array (
 																		 'Text'=>'(не выполнялся)',
@@ -72,21 +70,19 @@
 		в одном из списков (prod/dev) и что класс унаследован от прототипа тестов. */
 		if ( (in_array($test, $Api->tests)) && (basename(get_parent_class($test)) === 'TestPrototype') ) {
 
-			if ( (!isset($_SESSION[$test."_stat"])) || ($run) ) {
-				$tobj[0] = new $test;
-				$color = Component\SiteTester\Status::getColor( $tobj[0]->run() ); // Запустить тест
-				$_SESSION[$test."_stat"].= '|'.$color.'|'.date("D, d M Y H:i:s");
-			}
+			$tobj[0] = new $test;
+			$testStatus = $tobj[0]->getStatusSES();
+			if ( (empty($testStatus)) || ($run) ) $testStatus = $tobj[0]->run(); // Запустить тест
 
 			$Twig['Stat'] = array ( // Вывести статус с подсветкой цветом
-											'Text'=>strtok($_SESSION[$test."_stat"],'|'),
-											'Color'=>strtok('|'),
-											'Date'=>'('.strtok('|').')'
+											'Text'=>$testStatus['text'],
+											'Color'=>Component\SiteTester\Status::getColor( $testStatus['status'] ),
+											'Date'=>'('.$testStatus['date'].')'
 											);
 
-			if (!empty($_SESSION[$test."_mes"])) { // Вывести список сообщений, если были найдены
+			$messages = $tobj[0]->getMessSES();
+			if (!empty($messages)) { // Вывести список сообщений, если были найдены
 				$Twig['Messages'] = array();
-				$messages = explode('#',$_SESSION[$test."_mes"]);
 				$i = 0;
 				foreach ($messages as $mess) {
 					$text = strtok($mess,"|");
