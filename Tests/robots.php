@@ -16,8 +16,8 @@
 							if ($line === "disallow: /") {
 						  		$this->setStatusOk('Тест пройден успешно');
 						  		$newsearch = 3;
-						  }
-						  break 2;
+							}
+							break 2;
 					}
 				}
 				fclose($handle);
