@@ -83,25 +83,7 @@
 			$messages = $tobj[0]->getMessSES();
 			if (!empty($messages)) { // Вывести список сообщений, если были найдены
 				$Twig['Messages'] = array();
-				$i = 0;
-				foreach ($messages as $mess) {
-					$text = strtok($mess,"|");
-					switch ((int)substr($text,0,1)) {
-						case API::MESSAGE_TYPE_WARNING:
-							$Twig['Messages'][$i] = 'Warning: ';
-							break;
-
-						case API::MESSAGE_TYPE_ERROR:
-							$Twig['Messages'][$i] = 'Error: ';
-							break;
-
-						case API::MESSAGE_TYPE_INFO:
-							$Twig['Messages'][$i] = 'Info: ';
-							break;
-					}
-					$Twig['Messages'][$i].= substr($text,1)." (".strtok("|").')';
-					$i++;
-				}
+				foreach ($messages as $mess) $Twig['Messages'][] = new Component\SiteTester\TestMessage($mess);
 			}
 		}
 		$Twig['BackUrl'] = $_SERVER['PHP_SELF'];

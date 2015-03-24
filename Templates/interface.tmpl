@@ -37,7 +37,7 @@
 			<p><span style="color: {{ Stat.Color }}">{{ Stat.Text }}</span> {{ Stat.Date }}</p>
 			<br><div style="padding-left: 40px; font-size: 12px">
 				{% for Mess in Messages %}
-					<p>{{ Mess }}</p>
+					<p>{{ Mess.getRunResultType }}: <span style="color: {{ Mess.getResultColor }}">{{ Mess.getMessage }}</span></p>
 				{% endfor %}
 			</div>
 			<hr><br>
