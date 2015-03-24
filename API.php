@@ -1,4 +1,8 @@
 <?php
+	function newbasename ($path) { // Ф-ция для извлечения имени из пути с двумя типами разделителей (/ и \)
+		return preg_replace("/^.*[\/\\\]/", "", $path);
+	}
+
 	class API { // основной класс для работы
 		const MODE_PROD = 0;
 		const MODE_DEV = 1;
@@ -16,7 +20,7 @@
 			} else return self::MODE_PROD;
 		}
 		public function SearchTests() { // Поиск тестов
-			foreach (glob('Tests/*.php') as $filename) $this->tests[] = 'Tests\\'.substr(basename($filename),0,-4);
+			foreach (glob('Tests/*.php') as $filename) $this->tests[] = 'Tests\\'.substr(newbasename($filename),0,-4);
 		}
 		public function getTestList() { // TestPrototype[] - отдает набор объектов тестов
 			$TestList = array();
@@ -31,12 +35,12 @@
 					...
 				) */
 			$ProdTestList = array();
-			foreach ($this->tests as $test) if ($test::getMode() == self::MODE_PROD) $ProdTestList[] = $test;
+			foreach ($this->tests as $test) if (@$test::getMode() == self::MODE_PROD) $ProdTestList[] = $test;
 			return $ProdTestList;
 		}
 		public function getDevTestList() { // : string[] - отдает набор имен классов тестов для тестового сайта
 			$DevTestList = array();
-			foreach ($this->tests as $test) if ($test::getMode() == self::MODE_DEV) $DevTestList[] = $test;
+			foreach ($this->tests as $test) if (@$test::getMode() == self::MODE_DEV) $DevTestList[] = $test;
 			return $DevTestList;
 		}
 	}

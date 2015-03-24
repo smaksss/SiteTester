@@ -40,7 +40,7 @@
 			if (in_array($test, $ProdTestList)) {
 				$Twig['TestList'][$i]['Type'] = '[prod]';
 			} else $Twig['TestList'][$i]['Type'] = '[dev]';
-			$Twig['TestList'][$i]['Name'] = basename($test);
+			$Twig['TestList'][$i]['Name'] = newbasename($test);
 
 			if ($run) $tobj[$i]->run(); // Выполнить тест
 			/* При запуске сделать сохранение статусов в сессию.
@@ -68,8 +68,12 @@
 
 		/* При заходе в детальную теста проверить, что его класс есть хотя бы
 		в одном из списков (prod/dev) и что класс унаследован от прототипа тестов. */
-		if ( (in_array($test, $Api->tests)) && (basename(get_parent_class($test)) === 'TestPrototype') ) {
+		if (in_array($test, $Api->tests)) {
+			$ctest = $test;
+			while ( ($ctest = get_parent_class($ctest)) && (newbasename($ctest) !== 'TestPrototype') );
+		} else $ctest = '';
 
+		if ($ctest) {
 			$tobj[0] = new $test;
 			$testStatus = $tobj[0]->getStatusSES();
 			if ( (empty($testStatus)) || ($run) ) $testStatus = $tobj[0]->run(); // Запустить тест
