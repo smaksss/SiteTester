@@ -21,13 +21,10 @@
 			$arr = glob($path, GLOB_ONLYDIR);
 			foreach ($arr as $dirName) {
 
-				if ( (!empty($testDirs)) && (!in_array(basename($dirName),$testDirs)) ) {
-					$this->ScanDir ($dirName.'/*', $testDirs, $exceptions);
-					continue;
-				}
-				
 				if (in_array(basename($dirName),$exceptions)) continue;
-				
+				$this->ScanDir ($dirName.'/*', $testDirs, $exceptions);
+				if ( (!empty($testDirs)) && (!in_array(basename($dirName),$testDirs)) ) continue;
+
 				$success = ($this->checkDir($dirName) && $success);
 			}
 			return $success;

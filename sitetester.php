@@ -22,9 +22,7 @@
 	$ProdTestList = $Api->getProdTestList(); // Список классов тестов для живого сайта
 	$DevTestList = $Api->getDevTestList(); // Список классов тестов для тестового сайта
 
-	if (isset($_GET["run"])) { // Датчик запуска тестов
-		$run = true;
-	} else $run = false;
+	$run = isset($_GET["run"]); // Датчик запуска тестов
 
 	$Twig = array();
 
